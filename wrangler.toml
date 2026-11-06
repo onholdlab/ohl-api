@@ -1,0 +1,17 @@
+name = "ohl-api"
+main = "src/worker.js"
+compatibility_date = "2026-11-01"
+
+# 每天台灣時間 11:17（UTC 03:17）碰一下 Supabase，讓 8棒接力 不會因閒置被暫停
+[triggers]
+crons = ["17 3 * * *"]
+
+[vars]
+SUPABASE_URL = "https://zfghylavaxulytlbbxqi.supabase.co"
+# publishable 公開金鑰，原本就寫在網頁裡，放這裡沒有問題
+SUPABASE_KEY = "sb_publishable_13fkPXai231g3G0JU4mWhA_G_hctIxL"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ohl-db"
+database_id = ""   # 執行 npx wrangler d1 create ohl-db 後，把印出來的 database_id 貼在這裡
