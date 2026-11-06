@@ -38,11 +38,11 @@ async function feedback(req, env) {
   if (!message) return json(req, { error: 'invalid' }, 400);
   const now = Date.now();
   /* 全站每分鐘最多 20 則，擋灌爆；不記 IP */
-  const recent = await env.DB.prepare('SELECT COUNT(*) AS n FROM feedback WHERE at > ?').bind(now - 60000).first();
-  if (recent && recent.n >= 20) return json(req, { error: 'rate_limited' }, 429);
-  await env.DB.prepare('INSERT INTO feedback (source, kind, message, contact, page, ua, at) VALUES (?,?,?,?,?,?,?)')
+  const result = await env.DB.prepare(`INSERT INTO feedback (source, kind, message, contact, page, ua, at)
+    SELECT ?,?,?,?,?,?,? WHERE (SELECT COUNT(*) FROM feedback WHERE at > ?) < 20`)
     .bind(str(b.source, 40) || 'home', FEEDBACK_KINDS.includes(b.kind) ? b.kind : 'message', message,
-      str(b.contact, 200) || null, str(b.page, 300), str(b.ua, 200), now).run();
+      str(b.contact, 200) || null, str(b.page, 300), str(b.ua, 200), now, now - 60000).run();
+  if (!result.meta.changes) return json(req, { error: 'rate_limited' }, 429);
   return json(req, { ok: true }, 201);
 }
 
@@ -56,17 +56,17 @@ async function submitScore(req, env) {
     return json(req, { error: 'invalid' }, 400);
   const now = Date.now();
   /* 同一台裝置 5 秒內只能送一筆 */
-  const last = await env.DB.prepare('SELECT 1 FROM scores WHERE device = ? AND at > ? LIMIT 1').bind(device, now - 5000).first();
-  if (last) return json(req, { error: 'rate_limited' }, 429);
-  await env.DB.prepare('INSERT INTO scores (game, name, score, device, at) VALUES (?,?,?,?,?)')
-    .bind(game, name, score, device, now).run();
+  const result = await env.DB.prepare(`INSERT INTO scores (game, name, score, device, at)
+    SELECT ?,?,?,?,? WHERE NOT EXISTS (SELECT 1 FROM scores WHERE device = ? AND at > ?)`)
+    .bind(game, name, score, device, now, device, now - 5000).run();
+  if (!result.meta.changes) return json(req, { error: 'rate_limited' }, 429);
   return json(req, { ok: true }, 201);
 }
 
 async function leaderboard(req, env, url) {
   const game = url.searchParams.get('game');
-  if (!SCORE_RULES[game]) return json(req, { error: 'invalid' }, 400);
-  const limit = Math.min(50, Math.max(1, Number(url.searchParams.get('limit')) || 11));
+  if (!Object.hasOwn(SCORE_RULES, game)) return json(req, { error: 'invalid' }, 400);
+  const limit = Math.min(50, Math.max(1, Math.trunc(Number(url.searchParams.get('limit')) || 11)));
   /* 每台裝置只取最好的一筆；同分時先到先排 */
   const { results } = await env.DB.prepare(
     `SELECT name, score, device FROM (
@@ -94,6 +94,10 @@ async function count(req, env, url) {
 
 export default {
   async fetch(req, env) {
+    // CORS headers alone do not prevent simple cross-origin POSTs from writing.
+    const origin = req.headers.get('Origin');
+    if (origin !== null && !ORIGINS.includes(origin) && !LOCAL.test(origin))
+      return json(req, { error: 'forbidden' }, 403);
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors(req) });
     const url = new URL(req.url), route = req.method + ' ' + url.pathname;
     try {

@@ -42,9 +42,15 @@ npx wrangler deploy
 ## 搬十字路口的舊成績
 
 ```
-node scripts/export-supabase-scores.mjs > scores-import.sql
+node scripts/export-supabase-scores.mjs scores-import.sql
 npx wrangler d1 execute ohl-db --remote --file=scores-import.sql
 ```
+
+匯出完成且顯示筆數後才執行匯入；匯出檔直接以 UTF-8 寫入，不需 PowerShell 重新導向。搬移期間先停止送出舊成績，避免分頁讀取時資料變動。
+
+## 本機測試
+
+需要 Node.js 22.13 以上，執行 `node --test`。測試使用記憶體 SQLite，不會連線或修改正式資料。
 
 ## 看資料
 
