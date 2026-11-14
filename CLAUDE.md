@@ -1,0 +1,10 @@
+@AGENTS.md
+
+## Claude Code 專用
+
+`.claude/settings.json` 有兩個 hook，由程式執行，不靠你記得：
+
+- **guard-tests**：使用檔案編輯工具時，`test/` 下的既有測試只能插入新行，harness 檔案受到保護。Shell 等其他修改方式由 GitHub 的 `test-guard` 檢查提交結果。
+- **tests-must-pass**：你要結束時，只要程式有變動就自動跑 `node --test`。沒過就不能結束，失敗輸出會變成你的下一步指示。連續 3 次沒過，就改成停損診斷：不要再猜，照指示逐層查。
+
+使用者真的要讓 Claude 改既有測試時，在啟動 Claude Code 前設定環境變數 `OHL_ALLOW_TEST_EDIT=1`（PowerShell：`$env:OHL_ALLOW_TEST_EDIT=1; claude`）。

@@ -52,6 +52,8 @@ npx wrangler d1 execute ohl-db --remote --file=scores-import.sql
 
 需要 Node.js 22.13 以上，執行 `node --test`。測試使用記憶體 SQLite，不會連線或修改正式資料。
 
+GitHub Actions 會在 PR 上跑 `test`，並在每次推送到 `main` 後重跑。`test-guard` 上線後會比對 PR 與目標分支的共同祖先，並將結果回報到 PR 最新的 commit。它允許新增測試檔或在既有測試純粹插入新行。改寫、刪除或搬移既有測試，以及新增或修改任何 harness 檔案，都需要維護者加上 `harness-reviewed` 標籤。分支保護需另外在 GitHub 設定，才能把檢查列為合併條件。開發規則見 `AGENTS.md`。
+
 ## 看資料
 
 Cloudflare 後台 → Storage & Databases → D1 → `ohl-db` → Console，例如：
