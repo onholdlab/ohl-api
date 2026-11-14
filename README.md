@@ -52,6 +52,8 @@ npx wrangler d1 execute ohl-db --remote --file=scores-import.sql
 
 需要 Node.js 22.13 以上，執行 `node --test`。測試使用記憶體 SQLite，不會連線或修改正式資料。
 
+每個 PR 也會在 GitHub Actions 自動跑 `test` 與 `test-guard` 兩項檢查；開發規則（規格先行、測試只能新增）見 `AGENTS.md`。
+
 ## 看資料
 
 Cloudflare 後台 → Storage & Databases → D1 → `ohl-db` → Console，例如：

@@ -1,0 +1,10 @@
+{
+  "testDirs": ["test"],
+  "harnessPaths": [".claude/hooks", ".claude/settings.json", ".github/workflows", ".github/scripts"],
+  "testCommand": "node --test",
+  "testTimeoutSec": 540,
+  "setupCheck": [],
+  "setupCommand": "",
+  "stopLossAfter": 3,
+  "tailLines": 60
+}
