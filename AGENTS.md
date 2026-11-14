@@ -12,11 +12,11 @@
 
 - 既有測試不能改寫或刪除。測試沒過要修的是程式碼，不是測試。
 - 如果認為測試本身寫錯了，停下來說明是哪一條、為什麼錯、規格該怎麼改，由使用者決定。
-- CI 的 test-guard 會擋：PR 改寫或刪除既有測試，或改了 `.claude/hooks/`、`.claude/settings.json`、`.github/workflows/`、`.github/scripts/`，都要使用者在 PR 加上 `harness-reviewed` 標籤才會通過。
+- CI 的 test-guard 會擋：PR 改寫、刪除或搬移既有測試，或新增、修改 `.claude/hooks/`、`.claude/settings.json`、`.github/workflows/`、`.github/scripts/` 下的 harness 檔案，都要維護者在 PR 加上 `harness-reviewed` 標籤才會通過。
 
 ## 自動檢查（harness）
 
-- 每個 PR 都會在 GitHub Actions 跑兩項：`test`（`node --test`）與 `test-guard`。有紅叉就不要合併。
+- GitHub Actions 會在 PR 跑 `test`（`node --test`）。`test-guard` 需先在 `main` 上線，才會檢查後續送往 `main` 的 PR。分支保護設定決定檢查是否會阻擋合併。
 - 測試用記憶體 SQLite（`node:sqlite`），需要 Node.js 22.13 以上，不會連線或修改正式資料。
 
 ## 長任務的 context
