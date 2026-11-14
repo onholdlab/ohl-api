@@ -72,3 +72,16 @@ for (const [name, old_string, new_string, decision] of [
     assert.equal(response.hookSpecificOutput?.permissionDecision, decision);
   });
 }
+
+test('local guard allows appending to a test file without a trailing newline', (t) => {
+  const { cwd, write } = fixture(t);
+  write(testPath, 'first\nsecond');
+  const run = content => JSON.parse(spawnSync(process.execPath, [localGuard], {
+    cwd,
+    env: { ...process.env, CLAUDE_PROJECT_DIR: cwd, OHL_ALLOW_TEST_EDIT: '0' },
+    input: JSON.stringify({ tool_name: 'Write', tool_input: { file_path: testPath, content } }),
+    encoding: 'utf8'
+  }).stdout || '{}').hookSpecificOutput?.permissionDecision;
+  assert.equal(run('first\nsecond\nthird\n'), undefined);
+  assert.equal(run('first\nsecondX\n'), 'deny');
+});

@@ -51,7 +51,8 @@ function normalize(text) {
 
 function isPureInsertion(oldText, newText) {
   // 舊內容的每一行都依原順序出現在新內容裡 → 只有新增，沒有改寫或刪除
-  const lines = text => text.match(/[^\n]*\n|[^\n]+$/g) || [];
+  // 檔尾沒有換行時補一個，否則在這種檔案尾端新增內容會被誤判成改寫最後一行
+  const lines = text => (text && !text.endsWith('\n') ? text + '\n' : text).match(/[^\n]*\n/g) || [];
   const original = lines(oldText);
   let i = 0;
   for (const line of lines(newText)) {
