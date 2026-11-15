@@ -2,7 +2,7 @@
    所有網站與遊戲共用一個 Worker + 一個 D1 資料庫。
    每天一次的排程會呼叫 Supabase，讓 8棒接力 用的 Supabase 專案不會因閒置被暫停。 */
 
-const ORIGINS = ['https://onholdlab.github.io'];
+const ORIGINS = ['https://onholdlab.com', 'https://www.onholdlab.com', 'https://onholdlab.github.io'];
 const LOCAL = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
 
 /* 允許的遊戲與事件。新增遊戲時只要改這裡。 */

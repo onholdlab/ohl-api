@@ -8,7 +8,7 @@ onholdlab 所有網站與遊戲共用的後端：Cloudflare Worker + D1 資料�
 | `POST /scores`、`GET /leaderboard?game=` | 排行榜 | 十字路口（求生 `survive`、撞人賽 `bump`） |
 | `POST /event`、`GET /count?game=&kind=` | 匿名計數 | 許願神燈、混亂甲骨文 |
 
-- 只接受 `https://onholdlab.github.io` 和本機（localhost）的瀏覽器請求。
+- 只接受 `https://onholdlab.com`、`https://www.onholdlab.com`、`https://onholdlab.github.io` 和本機（localhost）的瀏覽器請求。網址必須完全相同（例如 `http://onholdlab.com`、`https://onholdlab.com.evil.example` 都會被拒絕）。
 - 不存 IP、不用 cookie。
 - 每天台灣時間 11:17 會呼叫一次 8棒接力的 Supabase，讓它不會因閒置一週被暫停。8棒接力仍留在 Supabase。
 - 新增遊戲：改 `src/worker.js` 最上面的 `SCORE_RULES`、`EVENT_GAMES`、`EVENT_KINDS`，再部署一次。
