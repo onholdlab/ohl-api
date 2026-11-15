@@ -2,7 +2,8 @@
    所有網站與遊戲共用一個 Worker + 一個 D1 資料庫。
    每天一次的排程會呼叫 Supabase，讓 8棒接力 用的 Supabase 專案不會因閒置被暫停。 */
 
-const ORIGINS = ['https://onholdlab.com', 'https://www.onholdlab.com', 'https://onholdlab.github.io'];
+const DEFAULT_ORIGIN = 'https://onholdlab.github.io';
+const ORIGINS = [DEFAULT_ORIGIN, 'https://onholdlab.com', 'https://www.onholdlab.com'];
 const LOCAL = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
 
 /* 允許的遊戲與事件。新增遊戲時只要改這裡。 */
@@ -15,7 +16,7 @@ function cors(req) {
   const o = req.headers.get('Origin') || '';
   const ok = ORIGINS.includes(o) || LOCAL.test(o);
   return {
-    'Access-Control-Allow-Origin': ok ? o : ORIGINS[0],
+    'Access-Control-Allow-Origin': ok ? o : DEFAULT_ORIGIN,
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Max-Age': '86400',

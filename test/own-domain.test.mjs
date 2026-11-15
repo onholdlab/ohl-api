@@ -26,6 +26,13 @@ const post = (path, data, origin) => new Request('https://api.example' + path, {
   method: 'POST', headers: { 'Content-Type': 'text/plain', Origin: origin }, body: JSON.stringify(data)
 });
 
+test('未提供 Origin 的請求保留原本的 CORS 預設值', async () => {
+  const res = await worker.fetch(new Request('https://api.example/'), {});
+  assert.equal(res.status, 200);
+  assert.equal(res.headers.get('Access-Control-Allow-Origin'), 'https://onholdlab.github.io');
+  assert.equal(res.headers.get('Vary'), 'Origin');
+});
+
 for (const origin of ['https://onholdlab.com', 'https://www.onholdlab.com']) {
   test(`${origin} 可以送事件、回饋、分數`, async t => {
     const env = database(t);
